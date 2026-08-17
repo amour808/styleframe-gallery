@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>What Is A Styleframe?</title>
+<style>
+  :root {
+    --ink: #171410;
+    --paper: #f0ece3;
+    --card: #1c1a17;
+    --accent: #e0632f;
+    --accent-dim: #8a3c1e;
+    --line: rgba(240,236,227,0.14);
+    --mono: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+    --serif: 'Georgia', 'Iowan Old Style', serif;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ink);
+    color: var(--paper);
+    font-family: var(--mono);
+    padding: 48px 24px 80px;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; }
+
+  header { margin-bottom: 44px; }
+  .eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+  h1 {
+    font-family: var(--serif);
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 400;
+    line-height: 1.05;
+    margin: 0 0 18px;
+    letter-spacing: -0.01em;
+  }
+  h1 em { font-style: italic; color: var(--accent); }
+  .lede {
+    font-family: var(--serif);
+    font-size: 17px;
+    line-height: 1.6;
+    color: rgba(240,236,227,0.72);
+    max-width: 640px;
+    margin: 0;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    margin-top: 40px;
+  }
+  @media (max-width: 720px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  .frame {
+    position: relative;
+    aspect-ratio: 16/10;
+    background: var(--card);
+    cursor: pointer;
+    overflow: hidden;
+    border: none;
+    padding: 0;
+    display: block;
+    width: 100%;
+  }
+  .frame .art {
+    position: absolute; inset: 0;
+    transition: transform 0.5s cubic-bezier(.16,1,.3,1);
+  }
+  .frame:hover .art { transform: scale(1.045); }
+  .frame .meta {
+    position: absolute; left: 0; right: 0; bottom: 0;
+    padding: 14px 16px 12px;
+    background: linear-gradient(to top, rgba(0,0,0,0.75), transparent);
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+  .frame:hover .meta { opacity: 1; transform: translateY(0); }
+  .frame .num {
+    position: absolute; top: 12px; left: 14px;
+    font-size: 11px; letter-spacing: 0.08em;
+    color: rgba(240,236,227,0.55);
+  }
+  .frame .title { font-family: var(--serif); font-size: 15px; color: var(--paper); }
+  .frame .tag { font-size: 10px; color: var(--accent); letter-spacing: 0.06em; text-transform: uppercase; margin-top: 3px; }
+
+  /* Lightbox */
+  .lightbox {
+    position: fixed; inset: 0;
+    background: rgba(10,9,7,0.94);
+    display: none;
+    align-items: center; justify-content: center;
+    z-index: 100;
+    padding: 32px;
+  }
+  .lightbox.open { display: flex; }
+  .lb-inner { max-width: 900px; width: 100%; }
+  .lb-frame {
+    aspect-ratio: 16/10;
+    width: 100%;
+    position: relative;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+  }
+  .lb-caption {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-top: 18px; gap: 20px;
+    border-top: 1px solid var(--line);
+    padding-top: 14px;
+  }
+  .lb-caption .title { font-family: var(--serif); font-size: 20px; color: var(--paper); }
+  .lb-caption .desc { font-size: 12px; color: rgba(240,236,227,0.55); margin-top: 6px; max-width: 520px; line-height: 1.5; }
+  .lb-index { font-size: 11px; color: var(--accent); letter-spacing: 0.08em; white-space: nowrap; }
+
+  .lb-nav {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    background: none; border: 1px solid var(--line); color: var(--paper);
+    width: 44px; height: 44px; border-radius: 50%;
+    font-family: var(--mono); font-size: 16px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .lb-nav:hover { border-color: var(--accent); color: var(--accent); }
+  .lb-prev { left: -22px; }
+  .lb-next { right: -22px; }
+  @media (max-width: 720px) {
+    .lb-prev { left: 4px; } .lb-next { right: 4px; }
+  }
+  .lb-close {
+    position: absolute; top: -40px; right: 0;
+    background: none; border: none; color: rgba(240,236,227,0.6);
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em;
+    cursor: pointer; text-transform: uppercase;
+  }
+  .lb-close:hover { color: var(--accent); }
+
+  .credit-note {
+    margin-top: 56px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+    font-size: 12px;
+    line-height: 1.7;
+    color: rgba(240,236,227,0.5);
+    max-width: 620px;
+  }
+  .credit-note strong { color: rgba(240,236,227,0.8); font-weight: normal; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">ART 257 — Reference Set</div>
+    <h1>What is a <em>styleframe?</em></h1>
+    <p class="lede">A styleframe locks the look of a motion piece — color, type, lighting, mood — in a single still, before a second of animation exists. Click any frame below to enlarge.</p>
+  </header>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="credit-note">
+    <strong>Note on these placeholders —</strong> the frames above are original mood studies built for this gallery, standing in for real work. Swap in properly credited examples from working designers before using this in class — see the linked sources in chat for a starting set with attribution intact.
+  </div>
+</div>
+
+<div class="lightbox" id="lightbox">
+  <div class="lb-inner">
+    <button class="lb-close" id="lbClose">Close ✕</button>
+    <div style="position:relative;">
+      <button class="lb-nav lb-prev" id="lbPrev">‹</button>
+      <div class="lb-frame" id="lbFrame"></div>
+      <button class="lb-nav lb-next" id="lbNext">›</button>
+    </div>
+    <div class="lb-caption">
+      <div>
+        <div class="title" id="lbTitle"></div>
+        <div class="desc" id="lbDesc"></div>
+      </div>
+      <div class="lb-index" id="lbIndex"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const frames = [
+  { tag: 'Sci-Fi / UI', title: 'Deep Field Interface', desc: 'Cool cyans against near-black, thin data-readout type — the palette of a diegetic HUD.', bg: 'linear-gradient(135deg,#0a1620,#0e2f3a 55%,#1c5f6b)' },
+  { tag: 'Documentary', title: 'Field Notes', desc: 'Desaturated warm neutrals, grain texture implied by layered gradients — archival, handled.', bg: 'linear-gradient(160deg,#3a2f22,#5c4a33 60%,#8a6f45)' },
+  { tag: 'Brand Explainer', title: 'Product Reveal', desc: 'High-key studio light, single accent color doing all the work of hierarchy.', bg: 'linear-gradient(120deg,#f4f1ea,#e6ded0 50%,#e0632f)' },
+  { tag: 'Title Sequence', title: 'Cold Open', desc: 'Deep contrast, negative space as a compositional device rather than a gap.', bg: 'linear-gradient(200deg,#050505,#1a1a1a 60%,#3a2418)' },
+  { tag: 'Game Cinematic', title: 'World State', desc: 'Saturated complementary pair, atmosphere doing the job dialogue would in live action.', bg: 'linear-gradient(145deg,#1a0f2e,#4a1f5e 55%,#c9622a)' },
+  { tag: 'Editorial', title: 'Kinetic Type Study', desc: 'Flat color field built to hold type in motion — the frame is a stage, not a scene.', bg: 'linear-gradient(100deg,#e8e2d5,#c94f2f 65%,#7a1f1f)' },
+];
+
+const grid = document.getElementById('grid');
+frames.forEach((f, i) => {
+  const btn = document.createElement('button');
+  btn.className = 'frame';
+  btn.innerHTML = `
+    <div class="art" style="background:${f.bg}"></div>
+    <div class="num">${String(i+1).padStart(2,'0')}</div>
+    <div class="meta">
+      <div class="title">${f.title}</div>
+      <div class="tag">${f.tag}</div>
+    </div>
+  `;
+  btn.addEventListener('click', () => openLightbox(i));
+  grid.appendChild(btn);
+});
+
+let current = 0;
+const lightbox = document.getElementById('lightbox');
+const lbFrame = document.getElementById('lbFrame');
+const lbTitle = document.getElementById('lbTitle');
+const lbDesc = document.getElementById('lbDesc');
+const lbIndex = document.getElementById('lbIndex');
+
+function openLightbox(i) {
+  current = i;
+  render();
+  lightbox.classList.add('open');
+}
+function render() {
+  const f = frames[current];
+  lbFrame.style.background = f.bg;
+  lbTitle.textContent = f.title;
+  lbDesc.textContent = f.desc;
+  lbIndex.textContent = `${String(current+1).padStart(2,'0')} / ${String(frames.length).padStart(2,'0')} — ${f.tag}`;
+}
+function closeLightbox() { lightbox.classList.remove('open'); }
+function next() { current = (current + 1) % frames.length; render(); }
+function prev() { current = (current - 1 + frames.length) % frames.length; render(); }
+
+document.getElementById('lbClose').addEventListener('click', closeLightbox);
+document.getElementById('lbNext').addEventListener('click', next);
+document.getElementById('lbPrev').addEventListener('click', prev);
+lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
+document.addEventListener('keydown', (e) => {
+  if (!lightbox.classList.contains('open')) return;
+  if (e.key === 'Escape') closeLightbox();
+  if (e.key === 'ArrowRight') next();
+  if (e.key === 'ArrowLeft') prev();
+});
+</script>
+</body>
+</html>
